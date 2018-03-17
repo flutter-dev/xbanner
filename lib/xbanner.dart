@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+///
+///XBanner 中的点击事件
 typedef void PageClick(int i);
 
+/// Banner widget
 class XBanner extends StatefulWidget {
   final List<Widget> _pages;
   final PageClick pageClick;
   final Duration bannerDuration;
   final Duration bannerAnimationDuration;
+
+  /// [_pages] 为 Banner 中需要展示的页面集合。
+  /// [pageClick] 为 Banner 中页面的点击事件回调。
+  /// [bannerDuration] Banner 中页面切换的时间间隔，默认为 2 秒。
+  /// [bannerAnimationDuration] Banner 中每次页面切换的动画时间，默认为 1 秒。
   XBanner(this._pages,
       {this.pageClick,
       this.bannerDuration = const Duration(seconds: 2),

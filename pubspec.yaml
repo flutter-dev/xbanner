@@ -1,8 +1,8 @@
 name: xbanner
 description: A Flutter Banner Widget.
-version: 0.0.1
-author: 番茄沙司
-homepage: http://zqlte.com
+version: 0.0.3
+author: 番茄沙司 <zqlxtt@live.com>
+homepage: https://github.com/flutter-dev/xbanner
 
 dependencies:
   flutter:
@@ -12,6 +12,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+environment:
+  sdk: ">=1.19.0 <2.0.0"
+  flutter: ">=0.1.1"
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
