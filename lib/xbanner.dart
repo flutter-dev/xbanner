@@ -1,0 +1,142 @@
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+typedef void PageClick(int i);
+
+class XBanner extends StatefulWidget {
+  final List<Widget> _pages;
+  final PageClick pageClick;
+  final Duration bannerDuration;
+  final Duration bannerAnimationDuration;
+  XBanner(this._pages,
+      {this.pageClick,
+      this.bannerDuration = const Duration(seconds: 2),
+      this.bannerAnimationDuration = const Duration(milliseconds: 1000)});
+
+  @override
+  State<StatefulWidget> createState() {
+    return new XBannerState();
+  }
+}
+
+class XBannerState extends State<XBanner> with SingleTickerProviderStateMixin {
+  PageController _pageController = new PageController();
+  Timer _timer;
+  int _currentPage = 0;
+  bool reverse = false;
+  GlobalKey<_XBannerTipState> _xBannerTipStateKey = new GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    _timer = new Timer.periodic(widget.bannerDuration, (timmer) {
+      _pageController.animateToPage(_currentPage,
+          duration: widget.bannerAnimationDuration, curve: Curves.linear);
+      if (!reverse) {
+        _currentPage += 1;
+        if (_currentPage == widget._pages.length) {
+          _currentPage -= 1;
+          reverse = true;
+        }
+      } else {
+        _currentPage -= 1;
+        if (_currentPage < 0) {
+          _currentPage += 1;
+          reverse = false;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> pageWithClick = [];
+    for (var i = 0; i < widget._pages.length; i++) {
+      pageWithClick.add(new InkWell(
+        child: widget._pages[i],
+        onTap: () {
+          if (widget.pageClick != null) {
+            widget.pageClick(i);
+          }
+        },
+      ));
+    }
+
+    return new Stack(
+      children: <Widget>[
+        new NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification scrollNotification) {
+              // if (scrollNotification is ScrollUpdateNotification) {
+              //   print("offset : ${_pageController.offset}");
+              //   print("position : ${_pageController.position.pixels}");
+              //   print("page : ${_pageController.page}");
+              // }
+              return false;
+            },
+            child: new PageView(
+              controller: _pageController,
+              children: pageWithClick,
+              onPageChanged: (index) {
+                _currentPage = index;
+                _xBannerTipStateKey.currentState.changeTipIndex(index);
+              },
+            )),
+        new Align(
+          child: new _XBannerTip(
+            widget._pages.length,
+            key: _xBannerTipStateKey,
+          ),
+          alignment: Alignment.bottomCenter,
+        )
+      ],
+    );
+  }
+}
+
+class _XBannerTip extends StatefulWidget {
+  final int _count;
+
+  _XBannerTip(this._count, {Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return new _XBannerTipState();
+  }
+}
+
+class _XBannerTipState extends State<_XBannerTip> {
+  int _index = 0;
+  changeTipIndex(int index) {
+    setState(() {
+      _index = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> childs = [];
+    for (int i = 0; i < widget._count; i++) {
+      childs.add(new SizedBox(
+        width: 5.0,
+        height: 5.0,
+        child: new Container(
+          color: i == _index ? Colors.black : Colors.grey,
+        ),
+      ));
+    }
+
+    return new SizedBox(
+      width: widget._count * 15.0,
+      height: 15.0,
+      child: new Row(
+        children: childs,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      ),
+    );
+  }
+}
